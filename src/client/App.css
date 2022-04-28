@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  background: url(./bg_arrows.svg) 83px top repeat #ff6b4a;
+  color: #000;
+  background-attachment: fixed;
 }
 
 .App-logo {
@@ -14,7 +17,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  /* background-color: #282c34; */
   min-height: 100vh;
   display: flex;
   flex-direction: column;

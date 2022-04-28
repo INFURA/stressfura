@@ -51,10 +51,11 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+        <br></br>
         <button onClick={triggerTest} disabled={isBtn1Disabled}>Launch load test</button>
         <p>Test run trigger result: {triggerTestResult}</p>
-        <div>Test run download result: {downloadReportMessage}</div>
         <button onClick={fetchTestData} disabled={isBtn2Disabled}>Download test report</button>
+        <div>Test run download result: {downloadReportMessage}</div>
       </header>
     </div>
   );

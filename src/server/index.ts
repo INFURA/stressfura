@@ -15,7 +15,7 @@ app.use(
 app.use(express.static(buildDir));
 
 
-const testOutputPath = './loadtest.txt'
+const testOutputPath = './LoadTestReport.txt'
 
 // app.get("/*", function (req, res) {
 //   res.sendFile(path.join(buildDir, "index.html"));
@@ -30,7 +30,7 @@ app.get("/fetch", function (req, res) {
     console.error(err)
   }
 
-  fs.readFile(testOutputPath, 'utf8', (err, data) => {
+  fs.readFile(testOutputPath, 'utf8', (err: any, data: any) => {
     if (err) {
       console.error(err);
       return err;
@@ -58,7 +58,7 @@ app.get("/commit", function (req, res) {
       console.error(err)
     }
 
-    fs.writeFile(testOutputPath, stdout, (err) => {
+    fs.writeFile(testOutputPath, stdout, (err: any) => {
       // throws an error, you could also catch it here
       if (err) throw err;
 

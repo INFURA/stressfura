@@ -2,25 +2,42 @@
   "name": "stressfura",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:3001",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
+    "@types/body-parser": "^1.19.2",
+    "@types/express": "^4.17.13",
     "@types/jest": "^27.4.1",
     "@types/node": "^16.11.31",
     "@types/react": "^18.0.8",
     "@types/react-dom": "^18.0.0",
+    "body-parser": "^1.20.0",
+    "concurrently": "^7.1.0",
+    "express": "^4.18.0",
+    "nodemon": "^2.0.15",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
+    "ts-loader": "^9.2.9",
     "typescript": "^4.6.3",
-    "web-vitals": "^2.1.4"
+    "wait-on": "^6.0.1",
+    "web-vitals": "^2.1.4",
+    "webpack-cli": "^4.9.2",
+    "webpack-node-externals": "^3.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "concurrently -p name -c \"yellow,magenta,blue\" -n \"webpack-server,nodemon-server,CRA\" \"yarn dev:server:webpack\" \"yarn dev:server:nodemon\" \"yarn dev:client\"",
+    "dev:client": "wait-on -l tcp:3001 && react-scripts start",
+    "dev:server": "concurrently -p name -c \"yellow,magenta\" -n \"webpack-server,nodemon-server\" \"yarn dev:server:webpack\" \"yarn dev:server:nodemon\"",
+    "dev:server:webpack": "webpack --config webpack.config.server.js --watch",
+    "dev:server:nodemon": "rm -f build/server.js && wait-on -l build/server.js && nodemon build/server.js",
+    "build": "yarn build:client && yarn build:backend",
+    "build:client": "react-scripts build",
+    "build:server": "webpack --config webpack.config.server.js"
   },
   "eslintConfig": {
     "extends": [

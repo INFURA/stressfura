@@ -18,9 +18,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react"
   },
   "include": [
     "src"
+  ],
+   // Don't compile src/server on the client
+   "exclude": [
+    "src/server"
   ]
 }

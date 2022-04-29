@@ -27,7 +27,7 @@ app.get("/fetch", function (req, res) {
       return res.json('results not ready')
     }
   } catch(err) {
-    console.error(err)
+    // console.error(err)
   }
 
   fs.readFile(testOutputPath, 'utf8', (err: any, data: any) => {
@@ -40,32 +40,55 @@ app.get("/fetch", function (req, res) {
 });
 
 app.get("/commit", function (req, res) {
-  exec("k6 run ./src/k6/script.js", (error: any, stdout: any, stderr: any) => {
-    // if (error) {
-    //     console.log(`error: ${error.message}`);
-    //     return error.message;
-    // }
-    // if (stderr) {
-    //     console.log(`stderr: ${stderr}`);
-    //     return stderr;
-    // }
-    // console.log(stdout);
-    try {
-      fs.unlinkSync(testOutputPath)
-      console.log('file removed')
-      //file removed
-    } catch(err) {
-      console.error(err)
-    }
-
-    fs.writeFile(testOutputPath, stdout, (err: any) => {
-      // throws an error, you could also catch it here
-      if (err) throw err;
-
-      // success case, the file was saved
-      console.log('Test result saved!');
+  try {
+    fs.unlinkSync(testOutputPath)
+    console.log('file removed')
+    //file removed
+  } catch(err) {
+    // console.error(err)
+  }
+  if(req.query.type === 'single'){
+    exec(`k6 run -e VUS=${req.query.VUs} -e DURATION=${req.query.Duration} -e INFURA_KEY=${req.query.InfuraKey} -e ALCHEMY_KEY=${req.query.AlchemyKey} ./src/k6/polygon_prod_like.js`, (error: any, stdout: any, stderr: any) => {
+      if (error) {
+          console.log(`error: ${error.message}`);
+          return error.message;
+      }
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return stderr;
+      }
+      console.log(stdout); 
+  
+      fs.writeFile(testOutputPath, stdout, (err: any) => {
+        // throws an error, you could also catch it here
+        if (err) throw err;
+  
+        // success case, the file was saved
+        console.log('Test result saved!');
+      });
     });
-  });
+  } else if(req.query.type === 'multi'){
+    exec(`k6 run -e VUS=${req.query.VUs} -e DURATION=${req.query.Duration} -e INFURA_KEY=${req.query.InfuraKey} -e ALCHEMY_KEY=${req.query.AlchemyKey} ./src/k6/infura_vs_alchemy.js`, (error: any, stdout: any, stderr: any) => {
+      if (error) {
+          console.log(`error: ${error.message}`);
+          return error.message;
+      }
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return stderr;
+      }
+      console.log(stdout); 
+  
+      fs.writeFile(testOutputPath, stdout, (err: any) => {
+        // throws an error, you could also catch it here
+        if (err) throw err;
+  
+        // success case, the file was saved
+        console.log('Test result saved!');
+      });
+    });
+  }
+  
   return res.json('job added!');
 });
 

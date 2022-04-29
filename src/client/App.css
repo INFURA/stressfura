@@ -39,3 +39,31 @@
     transform: rotate(360deg);
   }
 }
+
+a {
+  background-color: white;
+  color: #000;
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: 5px;
+  margin: 10px;
+  margin-bottom: 100px;
+}
+
+input, textarea, select, button, label {
+  width : 300px;
+  padding: 5px;
+  margin: 10px;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+label {
+  width: 120px;
+  font-family: Verdana, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #660000;
+}
+
+

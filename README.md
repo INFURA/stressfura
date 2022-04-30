@@ -16,3 +16,22 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
+
+## TODOS
+* P1
+  * ~~check start test button only enabled when prev test finished~~
+  * Allow to cancel test in progress (complication as stay in progress due to file not present, should check process there too!)
+  * show test errors in real time
+  * ~~Show test progress & notify when test is done~~
+  * better UI, including input validations
+  * break on error, when test stops
+* P2
+  * display final report
+  * print test duration including any gracefulStop
+  * allow better traffic ramps
+  * allow to chose the rpcs or rpcs groups
+  * allow to specify rpc params
+  * check scenarios
+  * add new scenarios
+
+

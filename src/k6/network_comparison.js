@@ -1,6 +1,6 @@
 import http from 'k6/http';
 import { SharedArray } from 'k6/data';
-import { group, check, sleep } from 'k6';
+import { group, check } from 'k6';
 import { Rate } from "k6/metrics";
 
 // not using SharedArray here will mean that the code in the function call (that is what loads and
@@ -11,16 +11,22 @@ const data = new SharedArray('Rpcs', function () {
 });
 
 export const options = {
-  vus: __ENV.VUS,
-  duration: __ENV.DURATION,
+  scenarios: {
+    example_scenario: {
+      executor: 'constant-vus',
+      vus: __ENV.VUS,
+      duration: __ENV.DURATION,
+      gracefulStop: '0s'
+    } 
+  }
 };
 
-export let infuraErrorRate = new Rate("InfuraErrors");
-export let alchemyErrorRate = new Rate("AlchemyErrors");
+export let network1ErrorRate = new Rate("Network1Errors");
+export let network2ErrorRate = new Rate("Network2Errors");
 
 export default function () {
-  group('Infura - polygon - Mainnet', function () {
-    const url = `https://polygon-mainnet.infura.io/v3/${__ENV.INFURA_KEY}`;
+  group('NETWORK1 - test', function () {
+    const url = __ENV.NETWORK1_URL;
     const payload = JSON.stringify(data[Math.floor(Math.random() * data.length)]);
     const params = {
       headers: {
@@ -38,13 +44,13 @@ export default function () {
     });
     if(!success) { 
       // console.log(res.body);
-      infuraErrorRate.add(1);
+      network1ErrorRate.add(1);
     }
     
   });
 
-  group('Alchemy - polygon - Mainnet', function () {
-    const url = `https://polygon-mainnet.g.alchemy.com/v2/${__ENV.ALCHEMY_KEY}`;
+  group('NETWORK2 - test', function () {
+    const url = __ENV.NETWORK2_URL;
     const payload = JSON.stringify(data[Math.floor(Math.random() * data.length)]);
     const params = {
       headers: {
@@ -62,7 +68,7 @@ export default function () {
     });
     if(!success) { 
       // console.log(res.body);
-      alchemyErrorRate.add(1);
+      network2ErrorRate.add(1);
     }
 
   });

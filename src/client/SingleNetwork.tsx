@@ -16,16 +16,21 @@ function SingleNetwork() {
     fetch("/fetch")
       .then((response) => response.json())
       .then((response) => {
-        const element = document.createElement("a");
-        const file = new Blob([response], {
-          type: "text/plain"
-        });
-        element.href = URL.createObjectURL(file);
-        element.download = "LoadTestReport.txt";
-        document.body.appendChild(element);
-        element.click();
-        setDownloadReportMessage('Test done see downloaded report');
-        setBtn1Disabled(false);
+        if(response !== 'results not ready'){
+          const element = document.createElement("a");
+          const file = new Blob([response], {
+            type: "text/plain"
+          });
+          element.href = URL.createObjectURL(file);
+          element.download = "LoadTestReport.txt";
+          document.body.appendChild(element);
+          element.click();
+          setDownloadReportMessage('Test done see downloaded report');
+          setBtn1Disabled(false);
+        } else {
+          setDownloadReportMessage('Checking...')
+          setTimeout(() => setDownloadReportMessage('In progress...'), 500)
+        }
       })
       .catch(() => {
         setDownloadReportMessage("ERROR");
@@ -34,11 +39,12 @@ function SingleNetwork() {
 
   const triggerTest = (data: any) => {
     console.log(data)
-    fetch(`/commit?VUs=${data.VUs}&Duration=${data.Duration}&type=single&InfuraKey=${data.InfuraKey}&AlchemyKey=${data.AlchemyKey}`)
+    fetch(`/commit?VUs=${data.VUs}&Duration=${data.Duration}&type=single&NetworkUrl=${data.NetworkUrl}`)
       .then((response) => response.json())
       .then((response) => {
         setBtn1Disabled(true);
         setTriggerTestResult(response);
+        setDownloadReportMessage('In progress...')
         setBtn2Disabled(false);
       })
       .catch(() => {
@@ -49,30 +55,41 @@ function SingleNetwork() {
   return (
     <div className="App">
       <header className="App-header">
-        {/* <img src={logo} className="App-logo" alt="logo" />
-        <br></br> */}
-        <Link to="/">Go back to main menu</Link>
+      <Link className="btn btn-primary btn-lg" to="/">Go back to main menu</Link>
         {/* https://react-hook-form.com/ */}
+        <div className="container">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <label>InfuraKey</label>
-          <input type="text" {...register("InfuraKey", { required: true } )}  />
-          {errors.InfuraKey && <span>The VUs field is required</span>}
-          <br></br>
-          <label>VUs</label>
-          <input type="number" {...register("VUs", { required: true, min: 1, max: 1000 } )} />
-          {errors.VUs && <span>The VUs field is empty or invalid</span>}
-          <br></br>
-          <label>Duration</label>
-          <input type="text" {...register("Duration", { required: true } )} />
-          {errors.Duration && <span>The Duration field is empty, example values are 30s,5m</span>}
-          <br></br>
-          <input type="submit" value="Start test"  disabled={isBtn1Disabled}/>
+        <div className="form-group row">
+          <label className="col-sm-2 col-form-label col-form-label-lg" >Network Url</label>
+          <div className="col-sm-10">
+            <input className="form-control" type="text" {...register("NetworkUrl", { required: true } )}  />
+            {errors.NetworkUrl && <span>The VUs field is required</span>}
+          </div>
+        </div>
+        <div className="form-group row">
+          <label className="col-sm-2 col-form-label col-form-label-lg">VUs</label>
+          <div className="col-sm-10">
+            <input className="form-control"  type="number" {...register("VUs", { required: true, min: 1, max: 1000 } )} />
+            {errors.VUs && <span>The VUs field is empty or invalid</span>}
+          </div>
+        </div>
+        <div className="form-group row">
+          <label className="col-sm-2 col-form-label col-form-label-lg">Duration</label>
+          <div className="col-sm-10">
+            <input className="form-control"  type="text" {...register("Duration", { required: true } )} />
+            {errors.Duration && <span>The Duration field is empty, example values are 30s,5m</span>}
+          </div>
+        </div>
+        <div className="col-auto">
+          <input className="btn btn-primary btn-lg" type="submit" value="Start test"  disabled={isBtn1Disabled}/>
+        </div>
         </form>
         {/* <button onClick={triggerTest} disabled={isBtn1Disabled}>Launch load test</button> */}
 
-        <p>Test run trigger result: {triggerTestResult}</p>
-        <button onClick={fetchTestData} disabled={isBtn2Disabled}>Download test report</button>
-        <div>Test run download result: {downloadReportMessage}</div>
+        <div className="alert alert-secondary col-sm-12" role="alert">{triggerTestResult}</div>
+        <button  className="btn btn-primary btn-lg" onClick={fetchTestData} disabled={isBtn2Disabled}>Download test report</button>
+        <div className="alert alert-secondary col-sm-12" role="alert">{downloadReportMessage}</div>
+        </div>
       </header>
     </div>
   );

@@ -48,7 +48,7 @@ app.get("/commit", function (req, res) {
     // console.error(err)
   }
   if(req.query.type === 'single'){
-    exec(`k6 run -e VUS=${req.query.VUs} -e DURATION=${req.query.Duration} -e INFURA_KEY=${req.query.InfuraKey} -e ALCHEMY_KEY=${req.query.AlchemyKey} ./src/k6/polygon_prod_like.js`, (error: any, stdout: any, stderr: any) => {
+    exec(`k6 run -e VUS=${req.query.VUs} -e DURATION=${req.query.Duration} -e NETWORK_URL=${req.query.NetworkUrl} ./src/k6/single_network.js`, (error: any, stdout: any, stderr: any) => {
       if (error) {
           console.log(`error: ${error.message}`);
           return error.message;
@@ -68,7 +68,7 @@ app.get("/commit", function (req, res) {
       });
     });
   } else if(req.query.type === 'multi'){
-    exec(`k6 run -e VUS=${req.query.VUs} -e DURATION=${req.query.Duration} -e INFURA_KEY=${req.query.InfuraKey} -e ALCHEMY_KEY=${req.query.AlchemyKey} ./src/k6/infura_vs_alchemy.js`, (error: any, stdout: any, stderr: any) => {
+    exec(`k6 run -e VUS=${req.query.VUs} -e DURATION=${req.query.Duration} -e NETWORK1_URL=${req.query.Network1Url} -e NETWORK2_URL=${req.query.Network2Url} ./src/k6/network_comparison.js`, (error: any, stdout: any, stderr: any) => {
       if (error) {
           console.log(`error: ${error.message}`);
           return error.message;
@@ -89,7 +89,7 @@ app.get("/commit", function (req, res) {
     });
   }
   
-  return res.json('job added!');
+  return res.json('Test started');
 });
 
 const port = 3001;

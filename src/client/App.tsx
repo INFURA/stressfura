@@ -14,8 +14,8 @@ function App() {
           padding: "1rem",
         }}
       >
-        <Link to="/networkComparison">Network comparison scenario</Link>
-        <Link to="/singleNetwork">Single Network scenario</Link>
+        <Link className="btn btn-primary btn-lg" to="/networkComparison">Network comparison scenario</Link>
+        <Link className="btn btn-primary btn-lg" to="/singleNetwork">Single Network scenario</Link>
       </nav>
 
       </header>

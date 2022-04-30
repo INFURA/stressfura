@@ -1,6 +1,6 @@
 import http from 'k6/http';
 import { SharedArray } from 'k6/data';
-import { group, check, sleep } from 'k6';
+import { group, check } from 'k6';
 import { Rate } from "k6/metrics";
 
 const data = new SharedArray('Rpcs', function () {
@@ -8,15 +8,21 @@ const data = new SharedArray('Rpcs', function () {
 });
 
 export const options = {
-  vus: __ENV.VUS,
-  duration: __ENV.DURATION,
+  scenarios: {
+    example_scenario: {
+      executor: 'constant-vus',
+      vus: __ENV.VUS,
+      duration: __ENV.DURATION,
+      gracefulStop: '0s'
+    } 
+  }
 };
 
-export let infuraErrorRate = new Rate("InfuraErrors");
+export let networkErrorRate = new Rate("NetworkErrors");
 
 export default function () {
-  group('Infura - polygon - Production like traffic', function () {
-    const url = `https://polygon-mumbai.staging.infura.org/v3/${__ENV.INFURA_KEY}`;
+  group('NETWORK - test', function () {
+    const url = __ENV.NETWORK_URL;
     const payload = JSON.stringify(data[Math.floor(Math.random() * data.length)]);
     const params = {
       headers: {
@@ -34,7 +40,7 @@ export default function () {
     });
     if(!success) { 
       // console.log(res.body);
-      infuraErrorRate.add(1);
+      networkErrorRate.add(1);
     }
     
   });

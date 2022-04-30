@@ -68,7 +68,7 @@ function SingleNetwork() {
       getErrors()
       getTestState()
       const interval = setInterval(() => getErrors(), 5000)
-      const interval2 = setInterval(() => getTestState(), 1000)
+      const interval2 = setInterval(() => getTestState(), 2000)
       return () => {
         clearInterval(interval);
         clearInterval(interval2);

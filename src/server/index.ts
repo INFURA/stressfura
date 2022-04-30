@@ -14,7 +14,6 @@ app.use(
 );
 app.use(express.static(buildDir));
 
-
 const testOutputPath = './LoadTestReport.txt'
 const testErrorOutputPath = './TestErrors.txt'
 
@@ -175,4 +174,18 @@ const port = 3001;
 console.log("checking port", port);
 app.listen(port, () => {
   console.log(`Server now listening on port: ${port}`);
+  try {
+    fs.unlinkSync(testOutputPath)
+    console.log('output file removed')
+    //file removed
+  } catch(err) {
+    // console.error(err)
+  }
+  try {
+    fs.unlinkSync(testErrorOutputPath)
+    console.log('error file removed')
+    //file removed
+  } catch(err) {
+    // console.error(err)
+  }
 });

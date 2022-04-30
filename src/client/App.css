@@ -9,15 +9,19 @@
   }
 }
 
+h1{
+  /* text-shadow: 2px 4px 3px rgba(0,0,0,0.3); */
+  color: white;
+  font-size: 50px;
+  font-weight: bold;
+}
+
 .App-header {
-  /* background-color: #282c34; */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
 .App-link {
@@ -31,12 +35,6 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-p {
-  font-size: 20px;
-  font-weight: bold;
-  color: #000;
 }
 
 /* 
@@ -64,6 +62,9 @@ body {
   background: url(./bg_arrows.svg) 83px top repeat #ff6b4a;
   color: #000;
   background-attachment: fixed;
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
 }
 
 .btn {
@@ -72,6 +73,20 @@ margin: 10px;
 
 .container {
 margin-top: 50px;
+}
+
+.scrollableErrorBox {
+  color: #383d41;
+  position: relative;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  overflow-y: scroll;
+  min-height: 20vh;
 }
 
 

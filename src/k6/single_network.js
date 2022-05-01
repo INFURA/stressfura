@@ -42,6 +42,5 @@ export default function () {
       // console.log(res.body);
       networkErrorRate.add(1);
     }
-    
   });
 }

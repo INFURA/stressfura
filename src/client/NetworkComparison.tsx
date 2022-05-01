@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 
 function NetworkComparison() {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const [testOutput, setTestOutput] = useState("");
   const [testErrors, setTestErrors] = useState("");
   const [triggerTestResult, setTriggerTestResult] = useState("Test not started");
-  const [downloadReportMessage, setDownloadReportMessage] = useState("");
   const [isBtn1Disabled, setBtn1Disabled] = useState(false);
   const [isBtn2Disabled, setBtn2Disabled] = useState(true);
 
@@ -30,7 +30,7 @@ function NetworkComparison() {
         }
       })
       .catch(() => {
-        setDownloadReportMessage("ERROR");
+        // setDownloadReportMessage("ERROR");
       });
   };
 
@@ -40,6 +40,7 @@ function NetworkComparison() {
       .then((response) => {
         setBtn1Disabled(true);
         setTriggerTestResult(response);
+        setBtn2Disabled(false);
       })
       .catch(() => {
         setTriggerTestResult('ERROR');
@@ -53,22 +54,29 @@ function NetworkComparison() {
       const getErrors = () => {
         fetch("/fetch-errors")
           .then(result => result.json())
-          .then(result => setTestErrors(result))
+          .then(result => { 
+            setTestErrors(result)
+            let textarea = document.getElementById('errors');
+            textarea!.scrollTop = textarea!.scrollHeight;
+          })
       }
       const getTestState = () => {
         fetch("/fetch-test-progress")
           .then(result => result.json())
           .then(result => { 
-            setDownloadReportMessage(result)
-            if(result === 'Test finished, please download the report'){
-              setBtn2Disabled(false)
-            }
+            setTestOutput(result)
+            let textarea = document.getElementById('stdout');
+            textarea!.scrollTop = textarea!.scrollHeight;
+            // setDownloadReportMessage(result)
+            // if(result === 'Test finished, please download the report'){
+            //   setBtn2Disabled(false)
+            // }
           })       
       }
       getErrors()
       getTestState()
-      const interval = setInterval(() => getErrors(), 5000)
-      const interval2 = setInterval(() => getTestState(), 2000)
+      const interval = setInterval(() => getErrors(), 1000)
+      const interval2 = setInterval(() => getTestState(), 1000)
       return () => {
         clearInterval(interval);
         clearInterval(interval2);
@@ -86,21 +94,21 @@ function NetworkComparison() {
           <div className="form-group row">
             <label className="col-sm-2 col-form-label col-form-label-lg" >Network 1 Url</label>
             <div className="col-sm-10">
-              <input className="form-control" type="text" {...register("Network1Url", { required: true } )}  />
-              {errors.Network1Url && <span>The VUs field is required</span>}
+              <input className="form-control" type="text" {...register("Network1Url", { pattern: /^https:\/\/.*/i } )}  />
+              {errors.Network1Url && <span>The VUs field is required and need to be a valid https url</span>}
             </div>
           </div>
           <div className="form-group row">
             <label className="col-sm-2 col-form-label col-form-label-lg">Network 2 Url</label>
             <div className="col-sm-10">
-              <input className="form-control"  type="text" {...register("Network2Url", { required: true } )} />
+              <input className="form-control"  type="text" {...register("Network2Url", { pattern: /^https:\/\/.*/i } )} />
               {errors.Network2Url && <span>The VUs field is required</span>}
             </div>
           </div>
           <div className="form-group row">
             <label className="col-sm-2 col-form-label col-form-label-lg">VUs</label>
             <div className="col-sm-10">
-              <input className="form-control"  type="number" {...register("VUs", { required: true, min: 1, max: 2000 } )} />
+              <input className="form-control"  type="number" {...register("VUs", { required: true, min: 1, max: 1000 } )} />
               {errors.VUs && <span>The VUs field is empty or invalid</span>}
             </div>
           </div>
@@ -118,11 +126,15 @@ function NetworkComparison() {
 
           <div className="alert alert-secondary col-sm-12" role="alert">{triggerTestResult}</div>
           <button  className="btn btn-dark btn-lg" onClick={fetchTestData} disabled={isBtn2Disabled}>Download test report</button>
-          <div className="alert alert-secondary col-sm-12" role="alert">{downloadReportMessage}</div>
+          {/* <div className="alert alert-secondary col-sm-12" role="alert">{downloadReportMessage}</div> */}
+
+          <hr></hr>
+          <p>Stdout</p>
+          <textarea className="scrollableErrorBox col-sm-12" value={testOutput} id="stdout"></textarea>
 
           <hr></hr>
           <p>Errors</p>
-          <textarea className="scrollableErrorBox col-sm-12" value={testErrors}></textarea>
+          <textarea className="scrollableErrorBox col-sm-12" value={testErrors} id="errors"></textarea>
 
         </div>
       </header>

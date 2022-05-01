@@ -28,6 +28,7 @@ You will also see any lint errors in the console.
   * clean rest api
   * cron fetch download report to update test status and download it once done
   * refactor common code between pages outside
+  * server refresh should not stop test run
 * P2
   * display final report
   * print test duration including any gracefulStop

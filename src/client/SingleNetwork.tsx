@@ -138,8 +138,7 @@ function SingleNetwork() {
             </div>
           </div>
           <div className="form-group row">
-            {/* https://k6.io/docs/using-k6/scenarios/arrival-rate */}
-            <label className="col-sm-2 col-form-label col-form-label-lg">VUs</label>
+            <a className="col-sm-2 col-form-label col-form-label-lg alert-link" href="https://k6.io/docs/using-k6/scenarios/arrival-rate" target="_blank">VUs</a>
             <div className="col-sm-10">
               <input className="form-control"  type="number" {...register("VUs", { required: true, min: 1, max: 500 } )} />
               {errors.VUs && <span>The VUs field is empty or invalid</span>}

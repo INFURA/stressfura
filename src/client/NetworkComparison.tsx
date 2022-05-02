@@ -136,7 +136,7 @@ function NetworkComparison() {
           <div className="form-group row">
             <label className="col-sm-2 col-form-label col-form-label-lg">VUs</label>
             <div className="col-sm-10">
-              <input className="form-control"  type="number" {...register("VUs", { required: true, min: 1, max: 1000 } )} />
+              <input className="form-control"  type="number" {...register("VUs", { required: true, min: 1, max: 500 } )} />
               {errors.VUs && <span>The VUs field is empty or invalid</span>}
             </div>
           </div>

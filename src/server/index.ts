@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import path from "path";
+import { exec } from "child_process";
 const { spawn } = require("child_process");
 const fs = require('fs');
 
@@ -17,11 +18,7 @@ app.use(express.static(buildDir));
 const testOutputPath = './LoadTestReport.txt'
 const testErrorOutputPath = './TestErrors.txt'
 
-// app.get("/*", function (req, res) {
-//   res.sendFile(path.join(buildDir, "index.html"));
-// });
-
-app.get("/cleanup", function (req, res) {
+const cleanup = () => {
   try {
     fs.unlinkSync(testOutputPath)
     console.log('output file removed')
@@ -36,9 +33,12 @@ app.get("/cleanup", function (req, res) {
   } catch(err) {
     // console.error(err)
   }
-  return res.json('')
-});
+}
 
+app.get("/cleanup", function (req, res) {
+  cleanup()
+  return res.json()
+});
 
 app.get("/fetch-errors", function (req, res) {
   try {
@@ -80,7 +80,7 @@ app.get("/fetch-test-progress", function (req, res) {
   try {
     if (!fs.existsSync(testOutputPath)) {
       // TODO: Distinguish here
-      return res.json('Test in progress, not started or terminated with errors...')
+      return res.json('No test infos available')
     }
     else {
       fs.readFile(testOutputPath, 'utf8', (err: any, data: any) => {
@@ -90,156 +90,75 @@ app.get("/fetch-test-progress", function (req, res) {
         }
         return res.json(data)
       });
-      //return res.json('Test finished, please download the report')
     }
   } catch(err) {
-    // console.error(err)
+    return err
   }
 });
 
 app.get("/commit", function (req, res) {
-  try {
-    fs.unlinkSync(testOutputPath)
-    console.log('output file removed')
-    //file removed
-  } catch(err) {
-    // console.error(err)
-  }
-  try {
-    fs.unlinkSync(testErrorOutputPath)
-    console.log('error file removed')
-    //file removed
-  } catch(err) {
-    // console.error(err)
-  }
+  cleanup()
   if(req.query.type === 'single'){
     var child = spawn(`k6`, ['run','-e',`VUS=${req.query.VUs}`, '-e', `DURATION=${req.query.Duration}`, '-e', `NETWORK_URL=${req.query.NetworkUrl}`, path.join(__dirname, "../") + '/src/k6/single_network.js']);
     child.stdout.on('data', function (data: any) {
       console.log('stdout: ' + data);
       fs.writeFile(testOutputPath, data, { flag: "a+" }, (err: any) => {
-        // throws an error, you could also catch it here
-        if (err) {
-          throw err;
-        }
-  
-        // success case, the file was saved
+        if (err) { throw err; }
         console.log('Test result saved!');
       });
      });
      child.stderr.on('data', function (data: any) {
       console.log('stderr: ' + data);
       fs.writeFile(testErrorOutputPath, data, { flag: "a+" }, (err: any) => {
-          // throws an error, you could also catch it here
           if (err) throw err;
         });
      });
      child.on('close', function (code: any) {
       console.log('child process exited with code ' + code);
      });
-
-    // exec(`k6 run -e VUS=${req.query.VUs} -e DURATION=${req.query.Duration} -e NETWORK_URL=${req.query.NetworkUrl} ./src/k6/single_network.js`, (error: any, stdout: any, stderr: any) => {
-    //   if (error) {
-    //     console.log(`error: ${error.message}`);
-    //       fs.writeFile(testErrorOutputPath, error.message, (err: any) => {
-    //         // throws an error, you could also catch it here
-    //         if (err) throw err;
-    //       });
-          
-    //       return error.message;
-    //   }
-    //   if (stderr) {
-    //     console.log(`stderr: ${stderr}`);
-    //     fs.writeFile(testErrorOutputPath, stderr, (err: any) => {
-    //       // throws an error, you could also catch it here
-    //       if (err) throw err;
-    //     });
-       
-    //     return stderr;
-    //   }
-    //   console.log(stdout); 
-  
-      // fs.writeFile(testOutputPath, stdout, (err: any) => {
-      //   // throws an error, you could also catch it here
-      //   if (err) throw err;
-  
-      //   // success case, the file was saved
-      //   console.log('Test result saved!');
-      // });
-   // });
   } else if(req.query.type === 'multi'){
     var child = spawn(`k6`, ['run','-e',`VUS=${req.query.VUs}`, '-e', `DURATION=${req.query.Duration}`, '-e', `NETWORK1_URL=${req.query.Network1Url}`, '-e', `NETWORK2_URL=${req.query.Network2Url}`, path.join(__dirname, "../") + '/src/k6/network_comparison.js']);
     child.stdout.on('data', function (data: any) {
       console.log('stdout: ' + data);
       fs.writeFile(testOutputPath, data, { flag: "a+" }, (err: any) => {
-        // throws an error, you could also catch it here
-        if (err) {
-          throw err;
-        }
-  
-        // success case, the file was saved
+        if (err) { throw err; }
         console.log('Test result saved!');
       });
      });
      child.stderr.on('data', function (data: any) {
       console.log('stderr: ' + data);
       fs.writeFile(testErrorOutputPath, data, { flag: "a+" }, (err: any) => {
-          // throws an error, you could also catch it here
           if (err) throw err;
         });
      });
      child.on('close', function (code: any) {
       console.log('child process exited with code ' + code);
      });
-    // exec(`k6 run -e VUS=${req.query.VUs} -e DURATION=${req.query.Duration} -e NETWORK1_URL=${req.query.Network1Url} -e NETWORK2_URL=${req.query.Network2Url} ./src/k6/network_comparison.js`, (error: any, stdout: any, stderr: any) => {
-    //   if (error) {
-    //     console.log(`error: ${error.message}`);
-    //       fs.writeFile(testErrorOutputPath, error.message, (err: any) => {
-    //         // throws an error, you could also catch it here
-    //         if (err) throw err;
-    //       });
-          
-    //       return error.message;
-    //   }
-    //   if (stderr) {
-    //     console.log(`stderr: ${stderr}`);
-    //     fs.writeFile(testErrorOutputPath, stderr, (err: any) => {
-    //       // throws an error, you could also catch it here
-    //       if (err) throw err;
-    //     });
-       
-    //     return stderr;
-    //   }
-    //   console.log(stdout); 
-  
-    //   fs.writeFile(testOutputPath, stdout, (err: any) => {
-    //     // throws an error, you could also catch it here
-    //     if (err) throw err;
-  
-    //     // success case, the file was saved
-    //     console.log('Test result saved!');
-    //   });
-    // });
   }
   
   return res.json('Test started');
 });
 
+app.get("/abort-test", (req,res) => {
+  exec(`ps aux | grep 'k6 run' | awk {'print $2'} | xargs kill -9`, (error: any, stdout: any, stderr: any) => {
+    if (error) {
+      console.log(`error: ${error.message}`);      
+      return res.json(`error: ${error.message}`);
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return res.json(`stderr: ${stderr}`);
+    }
+    if(stdout){
+      console.log(stdout); 
+      return res.json(`stdout: ${stdout}`)
+    }
+  });
+})
+
 const port = 3001;
 console.log("checking port", port);
 app.listen(port, () => {
   console.log(`Server now listening on port: ${port}`);
-  try {
-    fs.unlinkSync(testOutputPath)
-    console.log('output file removed')
-    //file removed
-  } catch(err) {
-    // console.error(err)
-  }
-  try {
-    fs.unlinkSync(testErrorOutputPath)
-    console.log('error file removed')
-    //file removed
-  } catch(err) {
-    // console.error(err)
-  }
+  cleanup()
 });

@@ -89,4 +89,17 @@ margin-top: 50px;
   min-height: 30vh;
 }
 
+.scrollableStdoutBox {
+  color: #1b1e21;
+  background-color: #d6d8d9;
+  border-color: #c6c8ca;
+  position: relative;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  border-color: #f5c6cb;
+  overflow-y: scroll;
+  min-height: 30vh;
+}
 

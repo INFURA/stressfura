@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import TestOutput, { InputState } from './TestOutput';
+import AbortTest, {AbortInputState} from './AbortTest';
 
 function SingleNetwork() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [testOutput, setTestOutput] = useState("");
   const [testErrors, setTestErrors] = useState("");
-  const [triggerTestResult, setTriggerTestResult] = useState("Test not started");
-  const [isBtn1Disabled, setBtn1Disabled] = useState(false);
-  const [isBtn2Disabled, setBtn2Disabled ] = useState(true);
+  const [isStartBtnDisabled, setStartBtnDisabled] = useState(false);
+  const [isDownloadBtnDisabled, setDownloadBtnDisabled ] = useState(true);
+  const [isAbortBtnDisabled, setAbortBtnDisabled ] = useState(true);
 
   const onSubmit = (data: any) => triggerTest(data);
 
@@ -26,11 +28,11 @@ function SingleNetwork() {
           element.download = "LoadTestReport.txt";
           document.body.appendChild(element);
           element.click();
-          setBtn1Disabled(false);
+          setStartBtnDisabled(false);
         }
       })
-      .catch(() => {
-        //setDownloadReportMessage("ERROR");
+      .catch((err) => {
+        setTestErrors(err)
       });
   };
 
@@ -38,14 +40,28 @@ function SingleNetwork() {
     fetch(`/commit?VUs=${data.VUs}&Duration=${data.Duration}&type=single&NetworkUrl=${data.NetworkUrl}`)
       .then((response) => response.json())
       .then((response) => {
-        setBtn1Disabled(true);
-        setTriggerTestResult(response);
-        setBtn2Disabled(false);
+        setStartBtnDisabled(true);
+        setAbortBtnDisabled(false);
+        setDownloadBtnDisabled(false);
+        setTestOutput(response)
       })
-      .catch(() => {
-        setTriggerTestResult('ERROR');
+      .catch((err) => {
+        setTestOutput(err);
       });
   };
+
+  const abortTest = () => {
+    fetch(`/abort-test`)
+    .then((response) => response.json())
+    .then((response) => {
+      setAbortBtnDisabled(true);
+      // TODO: Report result of this somewhere setTestErrors(response)
+      setStartBtnDisabled(false)
+    })
+    .catch((err) => {
+      // setTestErrors(err);
+    });
+  }
 
   useEffect(() => {
     (async () => {
@@ -84,6 +100,18 @@ function SingleNetwork() {
     })();
   }, []);
   
+  const inputState: InputState =  {
+    fetchTestData,
+    isDownloadBtnDisabled,
+    testOutput,
+    testErrors
+  }
+
+  const abortInputState: AbortInputState =  {
+    abortTest,
+    isAbortBtnDisabled
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -113,22 +141,13 @@ function SingleNetwork() {
           </div>
         </div>
         <div className="col-auto">
-          <input className="btn btn-dark btn-lg" type="submit" value="Start test"  disabled={isBtn1Disabled}/>
+          <input className="btn btn-dark btn-lg" type="submit" value="Start test"  disabled={isStartBtnDisabled}/>
         </div>
         </form>
-        {/* <button onClick={triggerTest} disabled={isBtn1Disabled}>Launch load test</button> */}
 
-        <div className="alert alert-secondary col-sm-12" role="alert">{triggerTestResult}</div>
-        <button  className="btn btn-dark btn-lg" onClick={fetchTestData} disabled={isBtn2Disabled}>Download test report</button>
-        {/* <div className="alert alert-secondary col-sm-12" role="alert">{downloadReportMessage}</div> */}
-        
-        <hr></hr>
-        <p>Stdout</p>
-        <textarea className="scrollableErrorBox col-sm-12" value={testOutput} id="stdout"></textarea>
+        <AbortTest {...abortInputState}></AbortTest>
 
-        <hr></hr>
-        <p>Errors</p>
-        <textarea className="scrollableErrorBox col-sm-12" value={testErrors} id="errors"></textarea>
+        <TestOutput {...inputState}> </TestOutput>
 
         </div>
       </header>

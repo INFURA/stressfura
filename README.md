@@ -19,23 +19,23 @@ You will also see any lint errors in the console.
 
 ## TODOS
 * P1
+  * allow better traffic ramps
+  * break on error, when test stops
+  * better UI, including input validations
+  * clean rest api
+  * refactor common code between pages outside
+  * ~~cron fetch download report to update test status and download it once done~~
+  * server refresh should not stop test run
   * ~~check start test button only enabled when prev test finished~~
-  * Allow to cancel test in progress (complication as stay in progress due to file not present, should check process there too!) `ps aux | grep 'k6 run' | awk {'print $2'} | xargs kill -9`
+  * ~~Allow to cancel test in progress (complication as stay in progress due to file not present, should check process there too!) `ps aux | grep 'k6 run' | awk {'print $2'} | xargs kill -9`~~
   * ~~show test errors in real time~~
   * ~~Show test progress & notify when test is done~~
-  * better UI, including input validations
-  * break on error, when test stops
-  * clean rest api
-  * cron fetch download report to update test status and download it once done
-  * refactor common code between pages outside
-  * server refresh should not stop test run
 * P2
-  * display final report
-  * print test duration including any gracefulStop
-  * allow better traffic ramps
+  * ~~display final report~~
   * allow to chose the rpcs or rpcs groups
   * allow to specify rpc params
   * check scenarios
   * add new scenarios
+  * print test duration including any gracefulStop
 
 

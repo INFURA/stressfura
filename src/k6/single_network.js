@@ -7,16 +7,61 @@ const data = new SharedArray('Rpcs', function () {
   return JSON.parse(open('./rpcs.json'));
 });
 
-export const options = {
-  scenarios: {
-    example_scenario: {
-      executor: 'constant-vus',
-      vus: __ENV.VUS,
-      duration: __ENV.DURATION,
-      gracefulStop: '0s'
+const fetchVar = () => {
+    switch (__ENV.RAMP) {
+      case 'loadRamp':
+        return  {
+          stages: [
+            { duration: '30s', target: __ENV.VUS }, // simulate ramp-up of traffic from 1 to 100 users over 5 minutes.
+            { duration: __ENV.DURATION, target: __ENV.VUS }, // stay at 100 users for 10 minutes
+            { duration: '30s', target: 0 }, // ramp-down to 0 users
+          ]
+        };
+      case 'stressRamp':
+        return {
+          stages: [
+            { duration: '1m', target: __ENV.VUS }, // below normal load
+            { duration: __ENV.DURATION, target: __ENV.VUS },
+            { duration: '1m', target: __ENV.VUS * 2 }, // normal load
+            { duration: __ENV.DURATION, target: __ENV.VUS * 2 },
+            { duration: '1m', target: __ENV.VUS * 3 }, // around the breaking point
+            { duration: __ENV.DURATION, target: __ENV.VUS * 3 },
+            { duration: '1m', target: __ENV.VUS * 4 }, // beyond the breaking point
+            { duration: __ENV.DURATION, target: __ENV.VUS * 4 },
+            { duration: '1m', target: 0 }, // scale down. Recovery stage.
+          ]
+        }
+      case 'soakRamp':
+        return {
+          stages: [
+            { duration: '2m', target: __ENV.VUS }, // ramp up to 400 users
+            { duration: __ENV.DURATION, target: __ENV.VUS }, // '3h56m' stay at 400 for ~4 hours
+            { duration: '2m', target: 0 }, // scale down. (optional)
+          ],
+        }
+      case 'spikeRamp':
+        return {
+          stages: [
+            { duration: '10s', target: __ENV.DURATION / 5 }, // below normal load
+            { duration: '30s', target:  __ENV.DURATION / 5 },
+            { duration: '10s', target: __ENV.VUS }, // spike to 1400 users
+            { duration: __ENV.DURATION, target: __ENV.VUS }, // stay at 1400 for 3 minutes
+            { duration: '10s', target:  __ENV.DURATION / 5 }, // scale down. Recovery stage.
+            { duration: __ENV.DURATION, target:  __ENV.DURATION / 5 },
+            { duration: '10s', target: 0 },
+          ],
+        }
+      default:
+        return  {
+          stages: [
+            { duration: '30s', target: __ENV.VUS }, // simulate ramp-up of traffic from 1 to 100 users over 5 minutes.
+            { duration: __ENV.DURATION, target: __ENV.VUS }, // stay at 100 users for 10 minutes
+            { duration: '30s', target: 0 }, // ramp-down to 0 users
+          ]
+        };
     } 
-  }
-};
+}
+export const options = fetchVar()
 
 export let networkErrorRate = new Rate("NetworkErrors");
 

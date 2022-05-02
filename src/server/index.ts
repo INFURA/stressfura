@@ -98,7 +98,7 @@ app.get("/fetch-test-progress", function (req, res) {
 app.get("/commit", function (req, res) {
   cleanup()
   if(req.query.Type === 'single'){
-    var child = spawn(`k6`, ['run','-e',`VUS=${req.query.VUs}`, '-e', `DURATION=${req.query.Duration}`, '-e', `NETWORK_URL=${req.query.NetworkUrl}`, '-e', `RPCS=${req.query.Rpcs}`, path.join(__dirname, "../") + '/src/k6/single_network.js']);
+    var child = spawn(`k6`, ['run','-e',`VUS=${req.query.VUs}`, '-e', `DURATION=${req.query.Duration}`, '-e', `NETWORK_URL=${req.query.NetworkUrl}`, '-e', `RPCS=${req.query.Rpcs}`,'-e',`RAMP=${req.query.Ramp}`, path.join(__dirname, "../") + '/src/k6/single_network.js']);
     child.stdout.on('data', function (data: any) {
       console.log('stdout: ' + data);
       fs.writeFile(testOutputPath, data, { flag: "a+" }, (err: any) => {
@@ -116,7 +116,7 @@ app.get("/commit", function (req, res) {
       console.log('child process exited with code ' + code);
      });
   } else if(req.query.Type === 'multi'){
-    var child = spawn(`k6`, ['run','-e',`VUS=${req.query.VUs}`, '-e', `DURATION=${req.query.Duration}`, '-e', `NETWORK1_URL=${req.query.Network1Url}`, '-e', `NETWORK2_URL=${req.query.Network2Url}`, '-e', `RPCS=${req.query.Rpcs}`, path.join(__dirname, "../") + '/src/k6/network_comparison.js']);
+    var child = spawn(`k6`, ['run','-e',`VUS=${req.query.VUs}`, '-e', `DURATION=${req.query.Duration}`, '-e', `NETWORK1_URL=${req.query.Network1Url}`, '-e', `NETWORK2_URL=${req.query.Network2Url}`, '-e', `RPCS=${req.query.Rpcs}`, ,'-e',`RAMP=${req.query.Ramp}`, path.join(__dirname, "../") + '/src/k6/network_comparison.js']);
     child.stdout.on('data', function (data: any) {
       console.log('stdout: ' + data);
       fs.writeFile(testOutputPath, data, { flag: "a+" }, (err: any) => {

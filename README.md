@@ -1,7 +1,6 @@
 # Getting Started with Stressfura
 
 ## Install K6
-
 Prior to start, K6 need to be installed in your local machine as the client/FE calls a backend that runs k6 scripts via CLI, to do so follow the instruction here [https://k6.io/docs/getting-started/installation/]
 
 ## Install the dependencies
@@ -15,12 +14,11 @@ Run the app (client + server) in the development mode. Open [http://localhost:30
 ## TODOS
 * P1
   * allow to specify rpc params
-  * allow better traffic ramps
   * break on error, when test stops
-  * better UI, including input validations
-  * clean rest api
+  * better UI (review with FE/Designer), improve input validations
+  * clean rest api (get to post, code refactor)
   * refactor common code between pages outside
-  * server refresh should not stop test run
+  * ~~allow better traffic ramps~~
   * ~~allow to chose the rpcs or rpcs groups~~
   * ~~cron fetch download report to update test status and download it once done~~
   * ~~check start test button only enabled when prev test finished~~
@@ -28,9 +26,10 @@ Run the app (client + server) in the development mode. Open [http://localhost:30
   * ~~show test errors in real time~~
   * ~~Show test progress & notify when test is done~~
 * P2
-  * ~~display final report~~
+  * server refresh should not stop test run
   * check scenarios
   * add new scenarios
   * print test duration including any gracefulStop
+  * ~~display final report~~
 
 

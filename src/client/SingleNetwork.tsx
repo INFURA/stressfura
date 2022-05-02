@@ -37,7 +37,7 @@ function SingleNetwork() {
   };
 
   const triggerTest = (data: any) => {
-    let url = `/commit?VUs=${data.VUs}&Duration=${data.Duration}&Type=single&NetworkUrl=${data.NetworkUrl}`
+    let url = `/commit?VUs=${data.VUs}&Duration=${data.Duration}&Type=single&NetworkUrl=${data.NetworkUrl}&Ramp=${data.Ramp}`
     let rpcs = '&Rpcs='
     if(data.eth_getLogs !== false) rpcs = rpcs + ',eth_getLogs'
     if(data.eth_call !== false) rpcs = rpcs + ',eth_call'
@@ -45,6 +45,8 @@ function SingleNetwork() {
     if(data.eth_getTransactionReceipt !== false) rpcs = rpcs + ',eth_getTransactionReceipt'
     if(data.eth_getBlockByNumber !== false) rpcs = rpcs + ',eth_getBlockByNumber'
     if(data.eth_blockNumber !== false) rpcs = rpcs + ',eth_blockNumber'
+    if(data.eth_chainId !== false) rpcs = rpcs + ',eth_chainId'
+    if(data.net_version !== false) rpcs = rpcs + ',net_version'
     fetch(url + rpcs)
       .then((response) => response.json())
       .then((response) => {
@@ -72,37 +74,36 @@ function SingleNetwork() {
   }
 
   useEffect(() => {
-    (async () => {
-      await fetch("/cleanup"); 
-      const getErrors = () => {
-        fetch("/fetch-errors")
-          .then(result => result.json())
-          .then(result => {
-            if (result !== '') setTestErrors(result)
-            let textarea = document.getElementById('errors');
+    fetch("/cleanup"); 
+
+    const getErrors = () => {
+      fetch("/fetch-errors")
+        .then(result => result.json())
+        .then(result => {
+          if (result !== '') setTestErrors(result)
+          let textarea = document.getElementById('errors');
+          textarea!.scrollTop = textarea!.scrollHeight;
+        })
+    }
+    const getTestState = () => {
+      fetch("/fetch-test-progress")
+        .then(result => result.json())
+        .then(result => { 
+          if (result !== '') {
+            setTestOutput(result)
+            let textarea = document.getElementById('stdout');
             textarea!.scrollTop = textarea!.scrollHeight;
-          })
-      }
-      const getTestState = () => {
-        fetch("/fetch-test-progress")
-          .then(result => result.json())
-          .then(result => { 
-            if (result !== '') {
-              setTestOutput(result)
-              let textarea = document.getElementById('stdout');
-              textarea!.scrollTop = textarea!.scrollHeight;
-            }
-          })       
-      }
-      getErrors()
-      getTestState()
-      const interval = setInterval(() => getErrors(), 1000)
-      const interval2 = setInterval(() => getTestState(), 1000)
-      return () => {
-        clearInterval(interval);
-        clearInterval(interval2);
-      }
-    })();
+          }
+        })       
+    }
+    getErrors()
+    getTestState()
+    const interval = setInterval(() => getErrors(), 1000)
+    const interval2 = setInterval(() => getTestState(), 1000)
+    return () => {
+      clearInterval(interval);
+      clearInterval(interval2);
+    }
   }, []);
   
   const inputState: InputState =  {
@@ -120,12 +121,15 @@ function SingleNetwork() {
   return (
     <div className="App">
       <header className="App-header">
-      <h1>Stressfura</h1>
       <Link className="btn btn-dark btn-lg" to="/">Go back to main menu</Link>
         {/* https://react-hook-form.com/ */}
         <div className="container">
 
           <form onSubmit={handleSubmit(onSubmit)}>
+          <hr></hr>
+          <div className="form-group row alert-secondary" role="alert">
+            <label className="col-sm-12 col-form-label col-form-label-lg" >Main params</label>
+          </div>
           <div className="form-group row">
             <label className="col-sm-2 col-form-label col-form-label-lg" >Network Url</label>
             <div className="col-sm-10">
@@ -134,6 +138,7 @@ function SingleNetwork() {
             </div>
           </div>
           <div className="form-group row">
+            {/* https://k6.io/docs/using-k6/scenarios/arrival-rate */}
             <label className="col-sm-2 col-form-label col-form-label-lg">VUs</label>
             <div className="col-sm-10">
               <input className="form-control"  type="number" {...register("VUs", { required: true, min: 1, max: 500 } )} />
@@ -154,36 +159,110 @@ function SingleNetwork() {
           </div>
           <div className="form-group row ">
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox"  value="true" {...register("eth_getLogs")} checked />
+              {/* TODO: Check how to tick all the checkbox by default */}
+              <input className="form-check-input" type="checkbox"  {...register("eth_getLogs")} />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getLogs</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox"  value="true" {...register("eth_call")} checked />
+              <input className="form-check-input" type="checkbox"  {...register("eth_call")}  />
               <label className="col-sm-2 col-form-label col-form-label-lg">eth_call</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getBalance")} checked />
+              <input className="form-check-input" type="checkbox" {...register("eth_getBalance")}  />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getBalance</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getTransactionReceipt")} checked />
+              <input className="form-check-input" type="checkbox"  {...register("eth_getTransactionReceipt")}  />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getTransactionReceipt</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("eth_blockNumber")} checked />
+              <input className="form-check-input" type="checkbox"   {...register("eth_blockNumber")}  />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_blockNumber</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getBlockByNumber")} checked />
+              <input className="form-check-input" type="checkbox"  {...register("eth_getBlockByNumber")}  />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getBlockByNumber</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("eth_chainId")} checked />
+              <input className="form-check-input" type="checkbox"  {...register("eth_chainId")}  />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_chainId</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("net_version")} checked />
+              <input className="form-check-input" type="checkbox"  {...register("net_version")}  />
               <label className="col-sm-2 col-form-label col-form-label-lg" >net_version</label>
+            </div>
+          </div>
+
+          <hr></hr>
+          <div className="form-group row alert-secondary" role="alert">
+            <label className="col-sm-12 col-form-label col-form-label-lg" >Load Ramps</label>
+          </div>
+          <div className="form-group row">
+            <div className="card col-sm-3 form-check">
+              <img className="card-img-top" src="./load-ramp.png" alt="Load test ramp" />
+              <div className="card-body">
+                <h5 className="card-title">Load</h5>
+                <code className="card-text">{JSON.stringify({
+                    stages: [
+                      { duration: '30s', target: '__ENV.VUS' }, // simulate ramp-up of traffic from 1 to 100 users over 5 minutes.
+                      { duration: '__ENV.DURATION', target: '__ENV.VUS' }, // stay at 100 users for 10 minutes
+                      { duration: '30s', target: 0 }, // ramp-down to 0 users
+                    ]
+                  }, undefined, 2)}</code>
+                <input className="form-check-input" type="radio" value="loadRamp" {...register("Ramp", { required: true })} />
+              </div>
+            </div>
+            <div className="card col-sm-3 form-check">
+              <img className="card-img-top" src="./stress-ramp.webp" alt="Stress test ramp" />
+              <div className="card-body">
+                <h5 className="card-title">Stress</h5>
+                <code className="card-text">{JSON.stringify({
+                  stages: [
+                    { duration: '1m', target: '__ENV.VUS' }, // below normal load
+                    { duration: '__ENV.DURATION', target: '__ENV.VUS' },
+                    { duration: '1m', target: '__ENV.VUS * 2' }, // normal load
+                    { duration: '__ENV.DURATION', target: '__ENV.VUS * 2' },
+                    { duration: '1m', target: '__ENV.VUS * 3' }, // around the breaking point
+                    { duration: '__ENV.DURATION', target: '__ENV.VUS * 3' },
+                    { duration: '1m', target: '__ENV.VUS * 4' }, // beyond the breaking point
+                    { duration: '__ENV.DURATION', target: '__ENV.VUS * 4' },
+                    { duration: '1m', target: 0 }, // scale down. Recovery stage.
+                  ]
+                }, undefined, 2)}</code>
+                <input className="form-check-input" type="radio" value="stressRamp"  {...register("Ramp", { required: true })} />
+              </div>
+            </div>
+            <div className="card  col-sm-3 form-check">
+              <img className="card-img-top" src="./soak-ramp.webp" alt="Soak test ramp" />
+              <div className="card-body">
+                <h5 className="card-title">Soak</h5>
+                <code className="card-text">{JSON.stringify({
+                  stages: [
+                    { duration: '2m', target: `__ENV.VUS` }, // ramp up to 400 users
+                    { duration: `__ENV.DURATION`, target: `__ENV.VUS` }, // '3h56m' stay at 400 for ~4 hours
+                    { duration: '2m', target: 0 }, // scale down. (optional)
+                  ],
+                }, undefined, 2)}</code>
+                <input className="form-check-input" type="radio" value="soakRamp"  {...register("Ramp", { required: true })} />
+              </div>
+            </div>
+            <div className="card  col-sm-3 form-check">
+              <img className="card-img-top" src="./soak-ramp.webp" alt="Spike test ramp" />
+              <div className="card-body">
+                <h5 className="card-title">Spike</h5>
+                <code className="card-text">{JSON.stringify({
+                  stages: [
+                    { duration: '10s', target: `__ENV.DURATION / 5` }, // below normal load
+                    { duration: '30s', target:  `__ENV.DURATION / 5` },
+                    { duration: '10s', target: `__ENV.VUS` }, // spike to 1400 users
+                    { duration: `__ENV.DURATION`, target: `__ENV.VUS` }, // stay at 1400 for 3 minutes
+                    { duration: '10s', target:  `__ENV.DURATION / 5` }, // scale down. Recovery stage.
+                    { duration: `__ENV.DURATION`, target:  `__ENV.DURATION / 5` },
+                    { duration: '10s', target: 0 },
+                  ],
+                }, undefined, 2)}</code>
+                <input className="form-check-input" type="radio" value="spikeRamp"  {...register("Ramp", { required: true })} />
+              </div>
             </div>
           </div>
 

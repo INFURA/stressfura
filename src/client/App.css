@@ -37,8 +37,21 @@ body {
 margin: 10px;
 }
 
-.container {
-margin-top: 50px;
+.card {
+  height: 700px;
+}
+
+.form-check-input{
+  margin-top: 10px;
+  position: absolute;
+  top: 98%;
+  left: 55%;
+  margin: -25px 0 0 -25px;
+}
+
+.card-img-top,.card-body{
+  height: 200px;
+  padding: 0;
 }
 
 .scrollableErrorBox {
@@ -69,3 +82,10 @@ margin-top: 50px;
   min-height: 30vh;
 }
 
+.alert-secondary {
+  border-radius: 0.25rem;
+}
+
+.card-text {
+  font-size: 10px;
+}

@@ -37,7 +37,7 @@ const cleanup = () => {
 
 app.get("/cleanup", function (req, res) {
   cleanup()
-  return res.json()
+  return res.json('')
 });
 
 app.get("/fetch-errors", function (req, res) {
@@ -79,8 +79,7 @@ app.get("/fetch", function (req, res) {
 app.get("/fetch-test-progress", function (req, res) {
   try {
     if (!fs.existsSync(testOutputPath)) {
-      // TODO: Distinguish here
-      return res.json('No test infos available')
+      return res.json('')
     }
     else {
       fs.readFile(testOutputPath, 'utf8', (err: any, data: any) => {
@@ -98,8 +97,8 @@ app.get("/fetch-test-progress", function (req, res) {
 
 app.get("/commit", function (req, res) {
   cleanup()
-  if(req.query.type === 'single'){
-    var child = spawn(`k6`, ['run','-e',`VUS=${req.query.VUs}`, '-e', `DURATION=${req.query.Duration}`, '-e', `NETWORK_URL=${req.query.NetworkUrl}`, path.join(__dirname, "../") + '/src/k6/single_network.js']);
+  if(req.query.Type === 'single'){
+    var child = spawn(`k6`, ['run','-e',`VUS=${req.query.VUs}`, '-e', `DURATION=${req.query.Duration}`, '-e', `NETWORK_URL=${req.query.NetworkUrl}`, '-e', `RPCS=${req.query.Rpcs}`, path.join(__dirname, "../") + '/src/k6/single_network.js']);
     child.stdout.on('data', function (data: any) {
       console.log('stdout: ' + data);
       fs.writeFile(testOutputPath, data, { flag: "a+" }, (err: any) => {
@@ -116,8 +115,8 @@ app.get("/commit", function (req, res) {
      child.on('close', function (code: any) {
       console.log('child process exited with code ' + code);
      });
-  } else if(req.query.type === 'multi'){
-    var child = spawn(`k6`, ['run','-e',`VUS=${req.query.VUs}`, '-e', `DURATION=${req.query.Duration}`, '-e', `NETWORK1_URL=${req.query.Network1Url}`, '-e', `NETWORK2_URL=${req.query.Network2Url}`, path.join(__dirname, "../") + '/src/k6/network_comparison.js']);
+  } else if(req.query.Type === 'multi'){
+    var child = spawn(`k6`, ['run','-e',`VUS=${req.query.VUs}`, '-e', `DURATION=${req.query.Duration}`, '-e', `NETWORK1_URL=${req.query.Network1Url}`, '-e', `NETWORK2_URL=${req.query.Network2Url}`, '-e', `RPCS=${req.query.Rpcs}`, path.join(__dirname, "../") + '/src/k6/network_comparison.js']);
     child.stdout.on('data', function (data: any) {
       console.log('stdout: ' + data);
       fs.writeFile(testOutputPath, data, { flag: "a+" }, (err: any) => {

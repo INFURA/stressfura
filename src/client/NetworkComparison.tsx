@@ -11,7 +11,7 @@ function NetworkComparison() {
   const [testErrors, setTestErrors] = useState("");
   const [isStartBtnDisabled, setStartBtnDisabled] = useState(false);
   const [isDownloadBtnDisabled, setDownloadBtnDisabled] = useState(true);
-  const [isAbortBtnDisabled, setAbortBtnDisabled ] = useState(true);
+  const [isAbortBtnDisabled, setAbortBtnDisabled] = useState(true);
 
   const onSubmit = (data: any) => triggerTest(data);
 
@@ -37,7 +37,15 @@ function NetworkComparison() {
   };
 
   const triggerTest = (data: any) => {
-    fetch(`/commit?VUs=${data.VUs}&Duration=${data.Duration}&type=multi&Network1Url=${data.Network1Url}&Network2Url=${data.Network2Url}`)
+    let url = `/commit?VUs=${data.VUs}&Duration=${data.Duration}&Type=single&NetworkUrl=${data.NetworkUrl}`
+    let rpcs = '&Rpcs='
+    if(data.eth_getLogs !== false) rpcs = rpcs + ',eth_getLogs'
+    if(data.eth_call !== false) rpcs = rpcs + ',eth_call'
+    if(data.eth_getBalance !== false) rpcs = rpcs + ',eth_getBalance'
+    if(data.eth_getTransactionReceipt !== false) rpcs = rpcs + ',eth_getTransactionReceipt'
+    if(data.eth_getBlockByNumber !== false) rpcs = rpcs + ',eth_getBlockByNumber'
+    if(data.eth_blockNumber !== false) rpcs = rpcs + ',eth_blockNumber'
+    fetch(url + rpcs)
       .then((response) => response.json())
       .then((response) => {
         setStartBtnDisabled(true);
@@ -71,7 +79,7 @@ function NetworkComparison() {
         fetch("/fetch-errors")
           .then(result => result.json())
           .then(result => { 
-            setTestErrors(result)
+            if (result !== '') setTestErrors(result)
             let textarea = document.getElementById('errors');
             textarea!.scrollTop = textarea!.scrollHeight;
           })
@@ -80,13 +88,11 @@ function NetworkComparison() {
         fetch("/fetch-test-progress")
           .then(result => result.json())
           .then(result => { 
-            setTestOutput(result)
-            let textarea = document.getElementById('stdout');
-            textarea!.scrollTop = textarea!.scrollHeight;
-            // setDownloadReportMessage(result)
-            // if(result === 'Test finished, please download the report'){
-            //   setBtn2Disabled(false)
-            // }
+            if (result !== '') {
+              setTestOutput(result)
+              let textarea = document.getElementById('stdout');
+              textarea!.scrollTop = textarea!.scrollHeight;
+            }
           })       
       }
       getErrors()
@@ -115,6 +121,7 @@ function NetworkComparison() {
   return (
     <div className="App">
       <header className="App-header">
+        <h1>Stressfura</h1>
         <Link className="btn btn-dark btn-lg" to="/">Go back to main menu</Link>
         {/* https://react-hook-form.com/ */}
         <div className="container">
@@ -134,7 +141,7 @@ function NetworkComparison() {
             </div>
           </div>
           <div className="form-group row">
-            <label className="col-sm-2 col-form-label col-form-label-lg">VUs</label>
+            <label className="col-sm-2 col-form-label col-form-label-lg">VUs </label>
             <div className="col-sm-10">
               <input className="form-control"  type="number" {...register("VUs", { required: true, min: 1, max: 500 } )} />
               {errors.VUs && <span>The VUs field is empty or invalid</span>}
@@ -147,13 +154,53 @@ function NetworkComparison() {
               {errors.Duration && <span>The Duration field is empty, example values are 30s,5m</span>}
             </div>
           </div>
+
+          <hr></hr>
+          <div className="form-group row alert-secondary" role="alert">
+          <label className="col-sm-12 col-form-label col-form-label-lg" >RPC</label>
+          </div>
+          <div className="form-group row ">
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox"  value="true" {...register("eth_getLogs")} />
+              <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getLogs</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox"  value="true" {...register("eth_call")} />
+              <label className="col-sm-2 col-form-label col-form-label-lg">eth_call</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getBalance")} />
+              <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getBalance</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getTransactionReceipt")} />
+              <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getTransactionReceipt</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox" value="true" {...register("eth_blockNumber")} />
+              <label className="col-sm-2 col-form-label col-form-label-lg" >eth_blockNumber</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getBlockByNumber")}/>
+              <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getBlockByNumber</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox" value="true" {...register("eth_chainId")}/>
+              <label className="col-sm-2 col-form-label col-form-label-lg" >eth_chainId</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox" value="true" {...register("net_version")}/>
+              <label className="col-sm-2 col-form-label col-form-label-lg" >net_version</label>
+            </div>
+          </div>
+
           <div className="col-auto">
             <input className="btn btn-dark btn-lg" type="submit" value="Start test"  disabled={isStartBtnDisabled}/>
           </div>
           </form>
 
+          <hr></hr>   
           <AbortTest {...abortInputState}></AbortTest>
-
           <TestOutput {...inputState}> </TestOutput>
 
         </div>

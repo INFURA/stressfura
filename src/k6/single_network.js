@@ -23,7 +23,9 @@ export let networkErrorRate = new Rate("NetworkErrors");
 export default function () {
   group('NETWORK - test', function () {
     const url = __ENV.NETWORK_URL;
-    const payload = JSON.stringify(data[Math.floor(Math.random() * data.length)]);
+    const rpcs = __ENV.RPCS[0] === ',' ? __ENV.RPCS.substring(1).split(',') : '';
+    let newData = data.filter((d) => rpcs.includes(d.method))
+    const payload = JSON.stringify(newData[Math.floor(Math.random() * newData.length)]);
     const params = {
       headers: {
         'Content-Type': 'application/json',

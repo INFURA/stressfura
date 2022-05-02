@@ -11,7 +11,6 @@ export type InputState = {
 const TestOutput: React.FC<InputState> = (inputState: InputState) => {
   return (
     <div>
-      <hr></hr>   
       <p>Stdout</p>
       <textarea className="scrollableStdoutBox col-sm-12" value={inputState.testOutput} id="stdout"></textarea>
       <button  className="btn btn-dark btn-lg" onClick={inputState.fetchTestData} disabled={inputState.isDownloadBtnDisabled}>Download test report</button>   

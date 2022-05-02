@@ -154,35 +154,35 @@ function SingleNetwork() {
           </div>
           <div className="form-group row ">
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox"  value="true" {...register("eth_getLogs")} />
+              <input className="form-check-input" type="checkbox"  value="true" {...register("eth_getLogs")} checked />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getLogs</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox"  value="true" {...register("eth_call")} />
+              <input className="form-check-input" type="checkbox"  value="true" {...register("eth_call")} checked />
               <label className="col-sm-2 col-form-label col-form-label-lg">eth_call</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getBalance")} />
+              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getBalance")} checked />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getBalance</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getTransactionReceipt")} />
+              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getTransactionReceipt")} checked />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getTransactionReceipt</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("eth_blockNumber")} />
+              <input className="form-check-input" type="checkbox" value="true" {...register("eth_blockNumber")} checked />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_blockNumber</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getBlockByNumber")}/>
+              <input className="form-check-input" type="checkbox" value="true" {...register("eth_getBlockByNumber")} checked />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_getBlockByNumber</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("eth_chainId")}/>
+              <input className="form-check-input" type="checkbox" value="true" {...register("eth_chainId")} checked />
               <label className="col-sm-2 col-form-label col-form-label-lg" >eth_chainId</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" value="true" {...register("net_version")}/>
+              <input className="form-check-input" type="checkbox" value="true" {...register("net_version")} checked />
               <label className="col-sm-2 col-form-label col-form-label-lg" >net_version</label>
             </div>
           </div>

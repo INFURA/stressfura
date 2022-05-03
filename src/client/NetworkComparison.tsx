@@ -122,7 +122,6 @@ function NetworkComparison() {
     <div className="App">
       <header className="App-header">
         <Link className="btn btn-dark btn-lg" to="/">Go back to main menu</Link>
-        {/* https://react-hook-form.com/ */}
         <div className="container">
           <form onSubmit={handleSubmit(onSubmit)}>
           <hr></hr>

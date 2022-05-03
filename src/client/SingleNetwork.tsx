@@ -144,11 +144,11 @@ function SingleNetwork() {
               {errors.VUs && <span>The VUs field is empty or invalid</span>}
             </div>
           </div>
-          <div className="form-group row">
+          <div className="form-group row">  
             <label className="col-sm-2 col-form-label col-form-label-lg">Duration</label>
             <div className="col-sm-10">
-              <input className="form-control"  type="text" {...register("Duration", { required: true } )} />
-              {errors.Duration && <span>The Duration field is empty, example values are 30s,5m</span>}
+              <input className="form-control"  type="text" {...register("Duration", { pattern: /^\d+h\d+m\d+s$|^\d+h\d+m$|^\d+h\d+s$|^\d+m\d+s$|^\d+m$|^\d+s/ } )} />
+              {errors.Duration && <span>The Duration field is empty, example values [30s, 5m, 1h, 2h30m, 25m5s, 1h10m5s]</span>}
             </div>
           </div>
 
@@ -201,13 +201,13 @@ function SingleNetwork() {
               <img className="card-img-top" src="./load-ramp.png" alt="Load test ramp" />
               <div className="card-body">
                 <h5 className="card-title">Load</h5>
-                <code className="card-text">{JSON.stringify({
-                    stages: [
-                      { duration: '30s', target: '__ENV.VUS' }, // simulate ramp-up of traffic from 1 to 100 users over 5 minutes.
-                      { duration: '__ENV.DURATION', target: '__ENV.VUS' }, // stay at 100 users for 10 minutes
-                      { duration: '30s', target: 0 }, // ramp-down to 0 users
-                    ]
-                  }, undefined, 2)}</code>
+                <p className="card-text">
+                <ol>
+                  <li>Ramp up from 0 to VUs (30s)</li>
+                  <li>Plateau VUs (duration)</li>
+                  <li>Ramp down from VUs to 0 (30s)</li>
+                </ol>
+                </p>
                 <input className="form-check-input" type="radio" value="loadRamp" {...register("Ramp", { required: true })} />
               </div>
             </div>
@@ -215,19 +215,19 @@ function SingleNetwork() {
               <img className="card-img-top" src="./stress-ramp.webp" alt="Stress test ramp" />
               <div className="card-body">
                 <h5 className="card-title">Stress</h5>
-                <code className="card-text">{JSON.stringify({
-                  stages: [
-                    { duration: '1m', target: '__ENV.VUS' }, // below normal load
-                    { duration: '__ENV.DURATION', target: '__ENV.VUS' },
-                    { duration: '1m', target: '__ENV.VUS * 2' }, // normal load
-                    { duration: '__ENV.DURATION', target: '__ENV.VUS * 2' },
-                    { duration: '1m', target: '__ENV.VUS * 3' }, // around the breaking point
-                    { duration: '__ENV.DURATION', target: '__ENV.VUS * 3' },
-                    { duration: '1m', target: '__ENV.VUS * 4' }, // beyond the breaking point
-                    { duration: '__ENV.DURATION', target: '__ENV.VUS * 4' },
-                    { duration: '1m', target: 0 }, // scale down. Recovery stage.
-                  ]
-                }, undefined, 2)}</code>
+                <p className="card-text">
+                <ol>
+                  <li>Ramp up from 0 to VUs (1m)</li>
+                  <li>Plateau VUs (duration)</li>
+                  <li>Ramp up from VUs to VUs*2 (1m)</li>
+                  <li>Plateau VUs*2 (duration)</li>
+                  <li>Ramp up from VUs* to VUs*3 (1m)</li>
+                  <li>Plateau VUs*3 (duration)</li>
+                  <li>Ramp up from VUs*3 to VUs*4 (1m)</li>
+                  <li>Plateau VUs*4 (duration)</li>
+                  <li>Ramp down from VUs to 0 (1m)</li>
+                </ol>
+                </p>
                 <input className="form-check-input" type="radio" value="stressRamp"  {...register("Ramp", { required: true })} />
               </div>
             </div>
@@ -235,13 +235,13 @@ function SingleNetwork() {
               <img className="card-img-top" src="./soak-ramp.webp" alt="Soak test ramp" />
               <div className="card-body">
                 <h5 className="card-title">Soak</h5>
-                <code className="card-text">{JSON.stringify({
-                  stages: [
-                    { duration: '2m', target: `__ENV.VUS` }, // ramp up to 400 users
-                    { duration: `__ENV.DURATION`, target: `__ENV.VUS` }, // '3h56m' stay at 400 for ~4 hours
-                    { duration: '2m', target: 0 }, // scale down. (optional)
-                  ],
-                }, undefined, 2)}</code>
+                <p className="card-text">
+                <ol>
+                  <li>Ramp up from 0 to VUs (2m)</li>
+                  <li>Plateau VUs (duration)</li>
+                  <li>Ramp down from VUs to 0 (2m)</li>
+                </ol>
+                </p>
                 <input className="form-check-input" type="radio" value="soakRamp"  {...register("Ramp", { required: true })} />
               </div>
             </div>
@@ -249,17 +249,17 @@ function SingleNetwork() {
               <img className="card-img-top" src="./soak-ramp.webp" alt="Spike test ramp" />
               <div className="card-body">
                 <h5 className="card-title">Spike</h5>
-                <code className="card-text">{JSON.stringify({
-                  stages: [
-                    { duration: '10s', target: `__ENV.DURATION / 5` }, // below normal load
-                    { duration: '30s', target:  `__ENV.DURATION / 5` },
-                    { duration: '10s', target: `__ENV.VUS` }, // spike to 1400 users
-                    { duration: `__ENV.DURATION`, target: `__ENV.VUS` }, // stay at 1400 for 3 minutes
-                    { duration: '10s', target:  `__ENV.DURATION / 5` }, // scale down. Recovery stage.
-                    { duration: `__ENV.DURATION`, target:  `__ENV.DURATION / 5` },
-                    { duration: '10s', target: 0 },
-                  ],
-                }, undefined, 2)}</code>
+                <p className="card-text">
+                <ol>
+                  <li>Ramp up from 0 to VUs/5 (10s)</li>
+                  <li>Plateau VUs/5 (30s)</li>
+                  <li>Ramp up from VUs/5 to VUs (10s)</li>
+                  <li>Plateau VUs (duration)</li>
+                  <li>Ramp down from VUs to VUs/5 (10s)</li>
+                  <li>Plateau VUs/5 (duration)</li>
+                  <li>Ramp down from VUs/5 to 0 (10s)</li>
+                </ol>
+                </p>
                 <input className="form-check-input" type="radio" value="spikeRamp"  {...register("Ramp", { required: true })} />
               </div>
             </div>

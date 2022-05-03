@@ -15,8 +15,10 @@ Run the app (client + server) in the development mode. Open [http://localhost:30
 * P1
   * allow to specify rpc params
   * break on error, when test stops
+  * rpc reponse should have more precise assertions, e.g. eth_call check result not 0x 
   * better UI (review with FE/Designer), improve input validations
   * clean rest api (get to post, code refactor)
+  * tick all rpcs button or default all checked
   * refactor common code between pages outside
   * ~~allow better traffic ramps~~
   * ~~allow to chose the rpcs or rpcs groups~~

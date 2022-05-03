@@ -45,19 +45,20 @@ body {
 margin: 10px;
 }
 
-.card {
-  height: 700px;
-}
 
 .form-check-input{
   margin-top: 10px;
   position: absolute;
-  top: 98%;
-  left: 55%;
+  top: 99%;
+  left: 57%;
   margin: -25px 0 0 -25px;
 }
 
-.card-img-top,.card-body{
+li {
+  text-align: left; 
+}
+
+.card-img-top{
   height: 200px;
   padding: 0;
 }

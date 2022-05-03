@@ -42,12 +42,12 @@ const fetchVar = () => {
       case 'spikeRamp':
         return {
           stages: [
-            { duration: '10s', target: __ENV.DURATION / 5 }, // below normal load
-            { duration: '30s', target:  __ENV.DURATION / 5 },
+            { duration: '10s', target: __ENV.VUS / 5 }, // below normal load
+            { duration: '30s', target:  __ENV.VUS / 5 },
             { duration: '10s', target: __ENV.VUS }, // spike to 1400 users
             { duration: __ENV.DURATION, target: __ENV.VUS }, // stay at 1400 for 3 minutes
-            { duration: '10s', target:  __ENV.DURATION / 5 }, // scale down. Recovery stage.
-            { duration: __ENV.DURATION, target:  __ENV.DURATION / 5 },
+            { duration: '10s', target:  __ENV.VUS / 5 }, // scale down. Recovery stage.
+            { duration: __ENV.DURATION, target:  __ENV.VUS / 5 },
             { duration: '10s', target: 0 },
           ],
         }

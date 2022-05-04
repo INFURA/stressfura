@@ -20,6 +20,9 @@ Run the app (client + server) in the development mode. Open [http://localhost:30
   * clean rest api (get to post, code refactor)
   * tick all rpcs button or default all checked
   * refactor common code between pages outside
+  * Clear error logs automatically when starting a new test run
+  * Clear console logs automatically when starting a new test run
+  * Stdout not scrollable, always bringing you to the bottom.
   * ~~allow better traffic ramps~~
   * ~~allow to chose the rpcs or rpcs groups~~
   * ~~cron fetch download report to update test status and download it once done~~
